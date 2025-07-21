@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "CSI-Final-Project-ADF"
+		},
+		"LS_ADLS_Gen2_properties_typeProperties_url": {
+			"value": "https://csifinalprojectadls.dfs.core.windows.net/"
+		},
+		"LS_REST_CountriesAPI_properties_typeProperties_url": {
+			"value": "https://restcountries.com/v3.1/"
+		},
+		"LS_Synapse_DW_properties_typeProperties_server": {
+			"value": "csi-final-project-synapse.sql.azuresynapse.net"
+		},
+		"LS_Synapse_DW_properties_typeProperties_database": {
+			"value": "DWPool"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
