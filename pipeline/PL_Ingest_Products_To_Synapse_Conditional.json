@@ -1,0 +1,25 @@
+{
+	"name": "PL_Ingest_Products_To_Synapse_Conditional",
+	"properties": {
+		"activities": [
+			{
+				"name": "Simulate_Product_Load",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": {
+						"value": "@int(div(pipeline().parameters.CustomerCountFromParent, 100))",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"CustomerCountFromParent": {
+				"type": "int"
+			}
+		},
+		"annotations": []
+	}
+}
