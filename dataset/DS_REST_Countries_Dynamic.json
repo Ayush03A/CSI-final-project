@@ -1,0 +1,23 @@
+{
+	"name": "DS_REST_Countries_Dynamic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_REST_CountriesAPI",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"countryName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('name/', dataset().countryName)",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
