@@ -29,6 +29,63 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/PL_Handle_Post_Load_Logic')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Check_If_Count_gt_600",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@greater(pipeline().parameters.RecordCount, 600)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Execute_Product_Pipeline",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "PL_Ingest_Products_To_Synapse_Conditional",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"CustomerCountFromParent": {
+												"value": "@pipeline().parameters.RecordCount",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"RecordCount": {
+						"type": "int"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PL_Ingest_Products_To_Synapse_Conditional')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PL_Ingest_Countries_To_Bronze')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -158,6 +215,340 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PL_Ingest_Customers_To_Synapse_Incremental')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get_Old_Watermark",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Set_Dynamic_FileName",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlDWSource",
+								"sqlReaderQuery": {
+									"value": "@concat('SELECT LastProcessedValue FROM dbo.WatermarkTable WHERE TableName = ''Customers''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Synapse_Generic_Query",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Get_New_Watermark",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Get_Old_Watermark",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlDWSource",
+								"sqlReaderQuery": {
+									"value": "SELECT GETDATE() as NewWatermark",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Synapse_Generic_Query",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Copy_Source_Customers_To_Bronze",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get_New_Watermark",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_Source_Customer_CSV",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_Bronze_Delta_CSV",
+								"type": "DatasetReference",
+								"parameters": {
+									"dynamicFileName": {
+										"value": "@variables('dynamicFileName')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Execute_Copy_Into_Customers",
+						"type": "Script",
+						"dependsOn": [
+							{
+								"activity": "Copy_Source_Customers_To_Bronze",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "LS_Synapse_DW",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": {
+										"value": "TRUNCATE TABLE Staging.Customers;\n\nCOPY INTO Staging.Customers (CustomerID, FirstName, LastName, Email, RegistrationDate, LastModifiedDate)\nFROM 'https://csifinalprojectadls.blob.core.windows.net/bronze/customers_delta/@{variables('dynamicFileName')}'\nWITH (\n    FILE_TYPE = 'CSV',\n    FIRSTROW = 2,\n    CREDENTIAL = (IDENTITY = 'Managed Identity')\n);",
+										"type": "Expression"
+									}
+								}
+							],
+							"scriptBlockExecutionTimeout": "02:00:00"
+						}
+					},
+					{
+						"name": "Get_Count_From_Synapse_Table",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Execute_Copy_Into_Customers",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlDWSource",
+								"sqlReaderQuery": {
+									"value": "SELECT COUNT(*) as RecordCount FROM Staging.Customers",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Synapse_Generic_Query",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Check_If_Count_gt_500",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Get_Count_From_Synapse_Table",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@greater(activity('Get_Count_From_Synapse_Table').output.firstRow.RecordCount, 500)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Execute_Post_Load_Logic_Pipeline",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "PL_Handle_Post_Load_Logic",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": false,
+										"parameters": {
+											"RecordCount": {
+												"value": "@activity('Get_Count_From_Synapse_Table').output.firstRow.RecordCount",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Set_Dynamic_FileName",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dynamicFileName",
+							"value": {
+								"value": "@concat('customers_delta_', utcNow('yyyyMMddHHmmss'), '.csv')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"dynamicFileName": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Synapse_Generic_Query')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Source_Customer_CSV')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Bronze_Delta_CSV')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_Synapse_DW')]",
+				"[concat(variables('factoryId'), '/pipelines/PL_Handle_Post_Load_Logic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Ingest_Products_To_Synapse_Conditional')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Simulate_Product_Load",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@int(div(pipeline().parameters.CustomerCountFromParent, 100))",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"CustomerCountFromParent": {
+						"type": "int"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_ADLS_Countries_Dynamic_Json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -185,6 +576,43 @@
 					}
 				},
 				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS_Gen2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Bronze_Delta_CSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS_Gen2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"dynamicFileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().dynamicFileName",
+							"type": "Expression"
+						},
+						"folderPath": "customers_delta",
+						"fileSystem": "bronze"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS_Gen2')]"
@@ -251,6 +679,78 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_REST_CountriesAPI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Source_Customer_CSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS_Gen2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "customers_source.csv",
+						"folderPath": "source_files",
+						"fileSystem": "bronze"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "String"
+					},
+					{
+						"name": "FirstName",
+						"type": "String"
+					},
+					{
+						"name": "LastName",
+						"type": "String"
+					},
+					{
+						"name": "Email",
+						"type": "String"
+					},
+					{
+						"name": "RegistrationDate",
+						"type": "String"
+					},
+					{
+						"name": "LastModifiedDate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS_Gen2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Synapse_Generic_Query')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_Synapse_DW",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_Synapse_DW')]"
 			]
 		},
 		{
