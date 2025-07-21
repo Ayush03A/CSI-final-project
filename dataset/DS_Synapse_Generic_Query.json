@@ -1,0 +1,12 @@
+{
+	"name": "DS_Synapse_Generic_Query",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Synapse_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": []
+	}
+}
