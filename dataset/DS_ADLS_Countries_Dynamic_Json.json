@@ -1,0 +1,28 @@
+{
+	"name": "DS_ADLS_Countries_Dynamic_Json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_Gen2",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dynamicFileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().dynamicFileName",
+					"type": "Expression"
+				},
+				"folderPath": "countries",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	}
+}

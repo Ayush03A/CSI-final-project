@@ -1,0 +1,14 @@
+{
+	"name": "LS_Synapse_DW",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDW",
+		"typeProperties": {
+			"server": "csi-final-project-synapse.sql.azuresynapse.net",
+			"database": "DWPool",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SystemAssignedManagedIdentity"
+		}
+	}
+}
