@@ -1,0 +1,49 @@
+{
+	"name": "PL_Handle_Post_Load_Logic",
+	"properties": {
+		"activities": [
+			{
+				"name": "Check_If_Count_gt_600",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(pipeline().parameters.RecordCount, 600)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Execute_Product_Pipeline",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL_Ingest_Products_To_Synapse_Conditional",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"CustomerCountFromParent": {
+										"value": "@pipeline().parameters.RecordCount",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"RecordCount": {
+				"type": "int"
+			}
+		},
+		"annotations": []
+	}
+}
