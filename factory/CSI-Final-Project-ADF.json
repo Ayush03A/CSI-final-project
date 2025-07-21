@@ -1,0 +1,9 @@
+{
+	"name": "CSI-Final-Project-ADF",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "fa80528d-e890-4ee3-a6c9-003ff055bf52",
+		"tenantId": "924182e6-326d-4330-b6e0-c83a1eb4fc60"
+	}
+}
