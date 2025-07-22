@@ -166,4 +166,4 @@ This platform provides a strong foundation that can be extended with several key
 
 ## 🙏 Acknowledgements
 
-A huge thank you to my mentor, **[Mentor's Name]**, for their invaluable guidance, feedback, and for pushing me to explore these advanced concepts. This project would not have been possible without their support and the incredible learning opportunity provided by **[Company/Internship Program Name]**.gram Name]**.
+A huge thank you to my mentors, **Jash Tewani, Ajit Kumar Singh & Anurag Yadav**, for their invaluable guidance, feedback, and for pushing me to explore these advanced concepts. This project would not have been possible without their support and the incredible learning opportunity provided by **Celebal Technologies**.
