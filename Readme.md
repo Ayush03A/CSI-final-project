@@ -62,7 +62,7 @@ This project goes beyond the basic requirements to deliver an enterprise-grade d
 
   ![Pipeline for Dynamic API Ingestion](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/Pipeline%20Countries.png)
 
-  - ✅ **The successful debug run output:** The `PL_Ingest_Countries_To_Bronze` pipeline showing the successful debug run output.
+- ✅ **The successful debug run output:** The `PL_Ingest_Countries_To_Bronze` pipeline showing the successful debug run output.
 
   ![Pipeline for Dynamic API Ingestion](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/(Countries)The%20successful%20debug%20run%20output.png)
 
