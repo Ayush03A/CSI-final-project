@@ -55,15 +55,19 @@ This project goes beyond the basic requirements to deliver an enterprise-grade d
 
 - ✅ **Pipeline Design:** The `PL_Ingest_Countries_To_Bronze` pipeline showing the `Lookup` -> `ForEach` pattern.
 
-  ![Pipeline for Dynamic API Ingestion]([LINK_TO_SCREENSHOT_04])
+  ![Pipeline for Dynamic API Ingestion](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/Pipeline%20Countries.png)
+
+  - ✅ **The successful debug run output:** The `PL_Ingest_Countries_To_Bronze` pipeline showing the successful debug run output.
+
+  ![Pipeline for Dynamic API Ingestion](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/(Countries)The%20successful%20debug%20run%20output.png)
 
 - ✅ **Scheduled Trigger:** The trigger configured for twice-daily execution in the India Standard Time timezone.
 
-  ![Twice-Daily IST Trigger]([LINK_TO_SCREENSHOT_05])
+  ![Twice-Daily IST Trigger](https://github.com/Ayush03A/CSI-final-project/blob/cc1995cdb9bccee2386a551e828a668290a19859/Screenshots/The%20Scheduled%20Trigger.png)
 
 - ✅ **Successful Execution:** The pipeline successfully created separate JSON files for each country in the ADLS Bronze layer.
 
-  ![Successful API Ingestion Run and Output Files]([LINK_TO_SCREENSHOT_06])
+  ![Successful API Ingestion Run and Output Files](https://github.com/Ayush03A/CSI-final-project/blob/cc1995cdb9bccee2386a551e828a668290a19859/Screenshots/The%20countries%20folder%20in%20ADLS.png)
 
 ---
 
@@ -80,19 +84,19 @@ This project goes beyond the basic requirements to deliver an enterprise-grade d
 
 - ✅ **Main Orchestration Pipeline:** The complete `PL_Ingest_Customers_To_Synapse_Incremental` pipeline showing the end-to-end flow.
 
-  ![Main ELT Orchestration Pipeline]([LINK_TO_SCREENSHOT_07])
+  ![Main ELT Orchestration Pipeline](https://github.com/Ayush03A/CSI-final-project/blob/cc1995cdb9bccee2386a551e828a668290a19859/Screenshots/PL_Ingest_Customers_To_Synapse_Incremental.png)
 
 - ✅ **High-Performance `COPY INTO`:** The script activity using the `COPY INTO` command with a dynamic filename variable.
 
-  ![High-Performance Loading with COPY INTO]([LINK_TO_SCREENSHOT_09])
+  ![High-Performance Loading with COPY INTO](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/The%20COPY%20INTO%20Script.png)
 
 - ✅ **Modular Child Pipeline Call:** The main `If` condition calling a child pipeline and passing the record count as a parameter.
 
-  ![Modular Conditional Logic via Child Pipelines]([LINK_TO_SCREENSHOT_11])
+  ![Modular Conditional Logic via Child Pipelines](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/The%20Conditional%20Logic%20and%20Child%20Pipeline%20Call.png)
 
 - ✅ **Successful End-to-End Run:** The full pipeline completed successfully, including the conditional execution path.
 
-  ![Successful End-to-End Run of the Main Pipeline]([LINK_TO_SCREENSHOT_12])
+  ![Successful End-to-End Run of the Main Pipeline](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/Successful%20Debug%20Run%20of%20Parent%20Pipeline.png)
 
 ---
 
@@ -109,19 +113,19 @@ This project goes beyond the basic requirements to deliver an enterprise-grade d
 
 - ✅ **Overall Architecture:** All Azure services deployed in a single, managed resource group.
 
-  ![Overall Project Architecture]([LINK_TO_SCREENSHOT_01])
+  ![Overall Project Architecture](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/Azure%20Resource%20Group.png)
 
 - ✅ **Silver Layer Logic:** The `sp_ProcessStagingCustomers` stored procedure containing the UPSERT and data quality logic.
 
-  ![Silver Layer Transformation Logic in Synapse]([LINK_TO_SCREENSHOT_10])
+  ![Silver Layer Transformation Logic in Synapse](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/Synapse%20Studio%20showing%20the%20T-SQL%20code%20for%20sp_ProcessStagingCustomers.png)
 
 - ✅ **Final Verified Output:** The `Silver.Customers` table populated with clean, analysis-ready data.
 
-  ![Final Verified Output in the Silver.Customers Table]([LINK_TO_SCREENSHOT_13])
+  ![Final Verified Output in the Silver.Customers Table](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/The%20Final%20Data%20in%20the%20Silver%20Table.png)
 
 - ✅ **Automated Data Governance:** The lineage graph in Microsoft Purview showing the automated tracking of data flow from ADLS to ADF.
 
-  ![Automated Data Governance with Microsoft Purview]([LINK_TO_SCREENSHOT_14])
+  ![Automated Data Governance with Microsoft Purview](https://github.com/Ayush03A/CSI-final-project/blob/3e5622f39cfd5bf738679327033c0ba1281dfeb2/Screenshots/%20Lineage%20Graph.png)
 
 ---
 
