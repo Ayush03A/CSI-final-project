@@ -186,7 +186,7 @@
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "Execute_Copy_Into_Customers",
+						"activity": "Execute_sp_ProcessStagingToSilver",
 						"dependencyConditions": [
 							"Completed"
 						]
@@ -274,6 +274,33 @@
 						"value": "@concat('customers_delta_', utcNow('yyyyMMddHHmmss'), '.csv')",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "Execute_sp_ProcessStagingToSilver",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute_Copy_Into_Customers",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[sp_ProcessStagingCustomers]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_Synapse_DW",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
