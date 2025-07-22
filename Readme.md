@@ -29,6 +29,11 @@ The goal of this project was to design and build a comprehensive data platform t
 
 This project goes beyond the basic requirements to deliver an enterprise-grade data platform. Here are the key architectural decisions that make this solution robust, secure, and production-ready:
 
+## Architecture Diagram
+
+![Architecture Diagram](https://github.com/Ayush03A/CSI-final-project/blob/24bf9716c26b4c6eccb64a9303983327fac48cb5/Screenshots/Architeture.png)
+
+
 | Feature Implemented                | Business Value & Technical Justification                                                                                                                                                                                                                              |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Medallion Architecture**         | 🥉🥈🥇 Data is progressively refined through **Bronze** (raw), **Staging**, and **Silver** (cleansed) layers. This ensures data quality and provides a "single source of truth" in the `Silver.Customers` table, ready for analytics.                  |
