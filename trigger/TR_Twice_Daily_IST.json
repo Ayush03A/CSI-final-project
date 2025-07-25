@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "Runs twice daily at 12 AM and 12 PM India time.",
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
